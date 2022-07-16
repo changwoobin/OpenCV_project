@@ -20,6 +20,7 @@ for dir in dirs:
     name, id = dir.split('_')
     names[int(id)] = name
 
+a = 0
 # 카메라 캡처 장치 준비 
 cap = cv2.VideoCapture(0+ cv2.CAP_DSHOW)
 while cap.isOpened():
@@ -43,6 +44,9 @@ while cap.isOpened():
             accuracy = int( 100 * (1 -confidence/400))
             if accuracy >= min_accuracy:
                 msg =  '%s(%.0f%%)'%(names[label], accuracy)
+                print(names[label], accuracy)
+                if accuracy >= 85:
+                    a = 1
             else:
                 msg = 'Unknown'
         # 사용자 이름과 정확도 결과 출력 ---⑧
@@ -53,6 +57,10 @@ while cap.isOpened():
                     (200,200,200), 2,cv2.LINE_AA)
     cv2.imshow('Face Recognition', frame)
     if cv2.waitKey(1) == 27: #esc 
+        print("인증 실패 했습니다.")
+        break
+    if a == 1:
+        print("인증 완료 되었습니다.")
         break
 cap.release()
 cv2.destroyAllWindows()     
