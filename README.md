@@ -8,7 +8,7 @@ pip install opencv-contrib-python
 ```
 * * *
 
-##실행 순서
+## 실행 순서
 1. opencv_a
 2. opencv_b
 3. opencv_c
@@ -27,7 +27,7 @@ opencv_c:
 
 * * *
 
-##해야 할 것들
+## 해야 할 것들
 
 1. 임시 웹 사이트
 2. 현재 프로그램 보완
