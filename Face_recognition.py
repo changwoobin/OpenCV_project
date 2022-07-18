@@ -2,13 +2,19 @@ import cv2
 import numpy as np
 import os, glob
 
+dir_first = os.path.join('./faces/')
 base_dir = './faces/'
-def taPic():
+def taPic(name, id):
     target_cnt = 400        
     cnt = 0                
 
     face_classifier = cv2.CascadeClassifier(\
                         './haarcascade_frontalface_default.xml')
+
+    # name = input("Insert User Name(Only Alphabet):")
+    # id = input("Insert User Id(Non-Duplicate number):")
+    dir_first = os.path.join(base_dir)
+    dir = os.path.join(base_dir, name+'_'+ id)
 
     if not os.path.exists(dir_first):
         os.mkdir(dir_first)
@@ -32,6 +38,8 @@ def taPic():
                 cv2.imwrite(file_name_path, face)
                 cv2.putText(frame, str(cnt), (x, y), cv2.FONT_HERSHEY_COMPLEX, \
                                 1, (0,255,0), 2)
+                if cnt == 10:
+                    break
                 cnt+=1
             else:
                 if len(faces) == 0 :
@@ -44,34 +52,44 @@ def taPic():
             if cv2.waitKey(1) == 27 or cnt == target_cnt: 
                 break
     cap.release()
-    cv2.destroyAllWindows()      
-    print("Collecting Samples Completed.")
+    cv2.destroyAllWindows()
+
+
+
+
+###########################################################
+
+
+
+
+
 
 def trainModel():
     train_data, train_labels = [], []
-
-
     dirs = [d for d in glob.glob(base_dir+"/*") if os.path.isdir(d)]
-    print('Collecting train data set:')
     for dir in dirs:
         id = dir.split('_')[1]          
         files = glob.glob(dir+'/*.jpg')
-        print('\t path:%s, %dfiles'%(dir, len(files)))
         for file in files:
             img = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
             train_data.append(np.asarray(img, dtype=np.uint8))
             train_labels.append(int(id))
-
     train_data = np.asarray(train_data)
     train_labels = np.int32(train_labels)
-
-    print('Starting LBP Model training...')
     model = cv2.face.LBPHFaceRecognizer_create()
     model.train(train_data, train_labels)
     model.write('./faces/all_face.xml')
-    print("Model trained successfully!")
+
+
+
+
+##########################################################
+
+
+
 
 def start_Face_Recognition():
+    return_number = 0
     min_accuracy = 85
 
     face_classifier = cv2.CascadeClassifier(\
@@ -103,31 +121,14 @@ def start_Face_Recognition():
             if confidence < 400:
                 accuracy = int( 100 * (1 -confidence/400))
                 if accuracy >= min_accuracy:
-                    print(names[label], accuracy)
                     a = 1
         cv2.imshow('Face Recognition', frame)
         if cv2.waitKey(1) == 27: #esc 
-            print("인증 실패 했습니다.")
             break
         elif a == 1:
-            print("인증 완료 되었습니다.")
+            return_number = 1
             break
     cap.release()
-    cv2.destroyAllWindows()    
+    cv2.destroyAllWindows()
 
-dir_first = os.path.join('./faces/')
-while 1:
-    if not os.path.exists(dir_first):
-        taPic()
-        trainModel()
-
-    n = int(input('무엇을 수행 할 까요?'))
-
-    if n == 1:
-        taPic()
-        trainModel()
-    elif n == 2:
-        start_Face_Recognition()
-        break
-    elif n == 3:
-        print("시스템을 종료합니다.")
+    return return_number
