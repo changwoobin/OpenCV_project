@@ -22,7 +22,7 @@ def taPic(name, id):
     if not os.path.exists(dir):
         os.mkdir(dir)
 
-    cap = cv2.VideoCapture(0+ cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(0)
     while cap.isOpened():
         ret, frame = cap.read()
         if ret:
@@ -66,14 +66,13 @@ def taPic(name, id):
 
 def trainModel():
     train_data, train_labels = [], []
-    dirs = [d for d in glob.glob(base_dir+"/*") if os.path.isdir(d)]
-    for dir in dirs:
-        id = dir.split('_')[1]          
-        files = glob.glob(dir+'/*.jpg')
-        for file in files:
-            img = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
-            train_data.append(np.asarray(img, dtype=np.uint8))
-            train_labels.append(int(id))
+    dir = [d for d in glob.glob(base_dir+"/*") if os.path.isdir(d)][0]
+    id = dir.split('_')[1]          
+    files = glob.glob(dir+'/*.jpg')
+    for file in files:
+        img = cv2.imread(file, cv2.IMREAD_GRAYSCALE)
+        train_data.append(np.asarray(img, dtype=np.uint8))
+        train_labels.append(int(id))
     train_data = np.asarray(train_data)
     train_labels = np.int32(train_labels)
     model = cv2.face.LBPHFaceRecognizer_create()
@@ -97,15 +96,14 @@ def start_Face_Recognition():
     model = cv2.face.LBPHFaceRecognizer_create()
     model.read(os.path.join(base_dir, 'all_face.xml'))
 
-    dirs = [d for d in glob.glob(base_dir+"/*") if os.path.isdir(d)]
+    dir = [d for d in glob.glob(base_dir+"/*") if os.path.isdir(d)][0]
     names = dict([])
-    for dir in dirs:
-        dir = os.path.basename(dir)
-        name, id = dir.split('_')
-        names[int(id)] = name
+    dir = os.path.basename(dir)
+    name, id = dir.split('_')
+    names[int(id)] = name
 
     a = 0
-    cap = cv2.VideoCapture(0+ cv2.CAP_DSHOW)
+    cap = cv2.VideoCapture(0)
     while cap.isOpened():
         ret, frame = cap.read()
         if not ret:

@@ -1,5 +1,6 @@
 from tkinter import *
 import Face_recognition as fr
+import shutil
 import os
 
 def btnevent():
@@ -59,6 +60,9 @@ def make_face():
     id = ep.get()
     e.delete(0, END)
     ep.delete(0, END)
+    if os.path.isdir('./faces'):
+        shutil.rmtree('./faces')
+    n = input('1.')
     fr.taPic(name, id)
     fr.trainModel()
 
@@ -90,7 +94,7 @@ def make_id():
 
 root = Tk()
 root.resizable(False,False)
-root.geometry("400x200+500+300")
+root.geometry("550x200+500+300")
 
 root.title("로그인")
 
